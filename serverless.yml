@@ -34,6 +34,20 @@ functions:
           method: get
           path: /hello
   
+  getTodo:
+    handler: handler.getTodo
+    events:
+      - httpApi:
+          method: get  
+          path: /todo/{id}
+
+  getDistrict:
+    handler: handler.getDistrict
+    events:
+      - httpApi:
+          method: get
+          path: /districts/{id}
+
   getAllDistricts:
     handler: handler.getAllDistricts
     memorySize: 3008
