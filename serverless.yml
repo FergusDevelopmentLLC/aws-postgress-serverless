@@ -25,6 +25,26 @@ provider:
   runtime: nodejs12.x
   lambdaHashingVersion: 20201221
 
+functions:
+
+  hello:
+    handler: handler.hello
+    events:
+      - httpApi:
+          method: get
+          path: /hello
+  
+  getAllDistricts:
+    handler: handler.getAllDistricts
+    memorySize: 3008
+    events:
+      - httpApi:
+          method: get
+          path: /districts
+        
+plugins:
+  - serverless-offline
+
 # you can overwrite defaults here
 #  stage: dev
 #  region: us-east-1
@@ -57,10 +77,6 @@ provider:
 #  exclude:
 #    - exclude-me.js
 #    - exclude-me-dir/**
-
-functions:
-  hello:
-    handler: handler.hello
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
