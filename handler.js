@@ -20,6 +20,8 @@ module.exports.hello = async (event) => {
 
 module.exports.getTodo = (event, context, callback) => {
   context.callbackWaitsForEmptyEventLoop = false;
+  console.log('db', db)
+  
   db.getById('todo', event.pathParameters.id)
     .then(res => {
       callback(null,{
