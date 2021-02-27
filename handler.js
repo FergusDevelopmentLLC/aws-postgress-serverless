@@ -22,10 +22,26 @@ module.exports.getDistrictsFor = (event, context, callback) => {
 
   const sql = 
   `
-    SELECT id, geom, statefp, cd116fp, affgeoid, geoid, lsad, cdsessn, aland, awater
-    FROM public.cb_2018_us_cd116_20m
-    WHERE statefp = $1;
+  SELECT jsonb_build_object(
+    'type', 'FeatureCollection',
+    'features', jsonb_agg(features.feature)
+  )
+  FROM (
+    SELECT jsonb_build_object(
+    'type', 'Feature',
+    'geometry', ST_AsGeoJSON(geom,3)::jsonb,
+    'properties', to_jsonb(inputs) - 'geom'
+  ) AS feature
+  FROM 
+    (
+      SELECT districts.*, states.stusps as state_abbrev, states.name as state_name
+      FROM cb_2018_us_state_20m states
+      JOIN cb_2018_us_cd116_20m districts on districts.statefp = states.statefp
+      WHERE stusps = $1
+    ) inputs
+  ) features;
   `
+
   const client = new Client(dbConfig)
   client.connect()
 
@@ -34,7 +50,7 @@ module.exports.getDistrictsFor = (event, context, callback) => {
     .then((res) => {
       callback(null,{
         statusCode: 200,
-        body: JSON.stringify(res)
+        body: JSON.stringify(res.rows[0]['jsonb_build_object'])
       })
       client.end()
     })
