@@ -1,5 +1,6 @@
 'use strict';
-const db = require('./db_connect');
+const dbConfig = require('./config/db')
+const { Client } = require('pg')
 
 module.exports.hello = async (event) => {
   return {
@@ -13,67 +14,35 @@ module.exports.hello = async (event) => {
       2
     ),
   };
-
   // Use this code if you don't use the http event with the LAMBDA-PROXY integration
   // return { message: 'Go Serverless v1.0! Your function executed successfully!', event };
 };
 
-module.exports.getTodo = (event, context, callback) => {
-  context.callbackWaitsForEmptyEventLoop = false;
-  console.log('db', db)
-  
-  db.getById('todo', event.pathParameters.id)
-    .then(res => {
-      callback(null,{
-        statusCode: 200,
-        body: JSON.stringify(res)
-      })
-    })
-    .catch(e => {
-      callback(null,{
-        statusCode: e.statusCode || 500,
-        body: "Could not find Todo: " + e
-      })
-    })
-};
+module.exports.getDistrictsFor = (event, context, callback) => {
 
-module.exports.getDistrict = (event, context, callback) => {
-  console.log('here1')
-  context.callbackWaitsForEmptyEventLoop = false;
-  console.log('here2')
-  console.log('event.pathParameters.id', event.pathParameters.id)
- 
-  db.getById('cb_2018_us_cd116_20m', event.pathParameters.id)
-    .then(res => {
-      console.log('here3')
-      callback(null,{
-        statusCode: 200,
-        body: JSON.stringify(res)
-      })
-    })
-    .catch(e => {
-      console.log('here4')
-      callback(null,{
-        statusCode: e.statusCode || 500,
-        body: "Could not find district : " + e
-      })
-    })
-};
+  const sql = 
+  `
+    SELECT id, geom, statefp, cd116fp, affgeoid, geoid, lsad, cdsessn, aland, awater
+    FROM public.cb_2018_us_cd116_20m
+    WHERE statefp = $1;
+  `
+  const client = new Client(dbConfig)
+  client.connect()
 
-module.exports.getAllDistricts = (event, context, callback) => {
-  context.callbackWaitsForEmptyEventLoop = false
-  db.getAll('cb_2018_us_cd116_20m')
-    .then(res => {
-      callback(null, {
+  client
+    .query(sql, [event.pathParameters.state_abbrev])
+    .then((res) => {
+      callback(null,{
         statusCode: 200,
         body: JSON.stringify(res)
       })
+      client.end()
     })
-    .catch(e => {
-      console.log(e);
-      callback(null, {
-        statusCode: e.statusCode || 500,
-        body: 'Error: Could not find districts: ' + e
+    .catch((error) => {
+      callback(null,{
+        statusCode: error.statusCode || 500,
+        body: `Could not find districts : ${error}`
       })
+      client.end()
     })
-};
+}
