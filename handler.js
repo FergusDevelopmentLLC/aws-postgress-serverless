@@ -51,6 +51,10 @@ module.exports.getDistrictsFor = (event, context, callback) => {
     .then((res) => {
       callback(null,{
         statusCode: 200,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Credentials': true
+        },
         body: JSON.stringify(res.rows[0]['jsonb_build_object'])
       })
       client.end()
@@ -58,6 +62,10 @@ module.exports.getDistrictsFor = (event, context, callback) => {
     .catch((error) => {
       callback(null,{
         statusCode: error.statusCode || 500,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Credentials': true
+        },
         body: `Could not find districts : ${error}`
       })
       client.end()
