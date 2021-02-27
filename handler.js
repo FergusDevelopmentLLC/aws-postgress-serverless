@@ -1,8 +1,10 @@
 'use strict';
 const dbConfig = require('./config/db')
 const { Client } = require('pg')
+const middy = require('middy')
+const { cors } = require('middy/middlewares')
 
-module.exports.hello = async (event) => {
+const helloFunc = async (event) => {
   return {
     statusCode: 200,
     body: JSON.stringify(
@@ -13,12 +15,12 @@ module.exports.hello = async (event) => {
       null,
       2
     ),
-  };
+  }
   // Use this code if you don't use the http event with the LAMBDA-PROXY integration
   // return { message: 'Go Serverless v1.0! Your function executed successfully!', event };
-};
+}
 
-module.exports.getDistrictsFor = (event, context, callback) => {
+const getDistrictsForFunc = (event, context, callback) => {
 
   const sql = 
   `
@@ -42,32 +44,36 @@ module.exports.getDistrictsFor = (event, context, callback) => {
     ) inputs
   ) features;
   `
-
   const client = new Client(dbConfig)
   client.connect()
 
   client
     .query(sql, [event.pathParameters.state_abbrev])
     .then((res) => {
-      callback(null,{
+
+      const response = {
         statusCode: 200,
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Credentials': true
-        },
-        body: JSON.stringify(res.rows[0]['jsonb_build_object'])
-      })
+        body: JSON.stringify(res.rows[0]['jsonb_build_object']),
+      }
+
+      callback(null, response)
+
       client.end()
     })
     .catch((error) => {
-      callback(null,{
+
+      const errorResponse = {
         statusCode: error.statusCode || 500,
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Credentials': true
-        },
-        body: `Could not find districts : ${error}`
-      })
+        body: `Could not find districts : ${error}`,
+      }
+
+      callback(null, errorResponse)
+
       client.end()
     })
 }
+
+const hello = middy(helloFunc).use(cors()) 
+const getDistrictsFor = middy(getDistrictsForFunc).use(cors()) 
+
+module.exports = { hello, getDistrictsFor }
