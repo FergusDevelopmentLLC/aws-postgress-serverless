@@ -34,28 +34,13 @@ functions:
           method: get
           path: /hello
   
-  getTodo:
-    handler: handler.getTodo
-    events:
-      - httpApi:
-          method: get  
-          path: /todo/{id}
-
-  getDistrict:
-    handler: handler.getDistrict
+  getDistrictsForState:
+    handler: handler.getDistrictsFor
     events:
       - httpApi:
           method: get
-          path: /districts/{id}
+          path: /districtsFor/{state_abbrev}
 
-  getAllDistricts:
-    handler: handler.getAllDistricts
-    memorySize: 3008
-    events:
-      - httpApi:
-          method: get
-          path: /districts
-        
 plugins:
   - serverless-offline
 
