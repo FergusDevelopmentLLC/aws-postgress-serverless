@@ -26,7 +26,8 @@ module.exports.getDistrictsFor = (event, context, callback) => {
     'type', 'FeatureCollection',
     'features', jsonb_agg(features.feature)
   )
-  FROM (
+  FROM 
+  (
     SELECT jsonb_build_object(
     'type', 'Feature',
     'geometry', ST_AsGeoJSON(geom,3)::jsonb,
@@ -61,4 +62,41 @@ module.exports.getDistrictsFor = (event, context, callback) => {
       })
       client.end()
     })
+}
+
+module.exports.getTodo = (event, context, callback) => {
+  
+  const client = new Client(dbConfig)
+  console.log('client', client)
+
+  client.connect()
+
+  console.log('client connect')
+
+  const sql = `SELECT * FROM public.todo limit 1;`
+  
+  console.log('sql', sql)
+
+  client
+    .query(sql, null)
+    .then((res) => {
+      console.log('here1')
+      callback(null,{
+        statusCode: 200,
+        body: JSON.stringify(res)
+      })
+      console.log('here2')
+      client.end()
+    })
+    .catch((error) => {
+      console.log('here3')
+      callback(null,{
+        statusCode: error.statusCode || 500,
+        body: `Could not find districts : ${error}`
+      })
+      console.log('here4')
+      client.end()
+    })
+  
+
 }
