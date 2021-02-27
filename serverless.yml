@@ -34,6 +34,13 @@ functions:
           method: get
           path: /hello
   
+  getTodo:
+    handler: handler.getTodo
+    events:
+      - httpApi:
+          method: get  
+          path: /todo/{id}
+  
   getDistrictsForState:
     handler: handler.getDistrictsFor
     events:
