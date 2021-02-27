@@ -33,7 +33,7 @@ functions:
       - http:
           method: get
           path: /hello
-          cors: false
+          cors: true
   
   getDistrictsForState:
     handler: handler.getDistrictsFor
@@ -41,7 +41,7 @@ functions:
       - http:
           method: get
           path: /districtsFor/{state_abbrev}
-          cors: false
+          cors: true
 
 plugins:
   - serverless-offline
