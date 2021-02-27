@@ -30,23 +30,18 @@ functions:
   hello:
     handler: handler.hello
     events:
-      - httpApi:
+      - http:
           method: get
           path: /hello
-  
-  getTodo:
-    handler: handler.getTodo
-    events:
-      - httpApi:
-          method: get  
-          path: /todo/{id}
+          cors: false
   
   getDistrictsForState:
     handler: handler.getDistrictsFor
     events:
-      - httpApi:
+      - http:
           method: get
           path: /districtsFor/{state_abbrev}
+          cors: false
 
 plugins:
   - serverless-offline
