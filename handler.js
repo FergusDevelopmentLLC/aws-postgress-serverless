@@ -4,7 +4,7 @@ const { Client } = require('pg')
 const middy = require('middy')
 const { cors } = require('middy/middlewares')
 
-const helloFunc = async (event) => {
+const hello = async (event) => {
   return {
     statusCode: 200,
     body: JSON.stringify(
@@ -20,7 +20,7 @@ const helloFunc = async (event) => {
   // return { message: 'Go Serverless v1.0! Your function executed successfully!', event };
 }
 
-const getDistrictsForFunc = (event, context, callback) => {
+const getDistrictsFor = (event, context, callback) => {
 
   const sql = 
   `
@@ -56,6 +56,9 @@ const getDistrictsForFunc = (event, context, callback) => {
         body: JSON.stringify(res.rows[0]['jsonb_build_object']),
       }
 
+      res.setHeader('content-type', 'application/json');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+
       callback(null, response)
 
       client.end()
@@ -73,7 +76,7 @@ const getDistrictsForFunc = (event, context, callback) => {
     })
 }
 
-const hello = middy(helloFunc).use(cors()) 
-const getDistrictsFor = middy(getDistrictsForFunc).use(cors()) 
+// const hello = middy(helloFunc).use(cors()) 
+// const getDistrictsFor = middy(getDistrictsForFunc).use(cors()) 
 
 module.exports = { hello, getDistrictsFor }
