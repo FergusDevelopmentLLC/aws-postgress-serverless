@@ -1,8 +1,6 @@
 'use strict';
 const dbConfig = require('./config/db')
 const { Client } = require('pg')
-const middy = require('middy')
-const { cors } = require('middy/middlewares')
 
 const hello = async (event) => {
   return {
@@ -75,8 +73,5 @@ const getDistrictsFor = (event, context, callback) => {
       client.end()
     })
 }
-
-// const hello = middy(helloFunc).use(cors()) 
-// const getDistrictsFor = middy(getDistrictsForFunc).use(cors()) 
 
 module.exports = { hello, getDistrictsFor }
