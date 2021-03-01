@@ -35,11 +35,11 @@ functions:
           path: /hello
   
   getDistrictsForState:
-    handler: handler.getDistrictsFor
+    handler: handler.getDistrictsForState
     events:
       - http:
           method: get
-          path: /districtsFor/{state_abbrev}
+          path: /districtsForState/{state_abbrev}
 
 plugins:
   - serverless-offline
