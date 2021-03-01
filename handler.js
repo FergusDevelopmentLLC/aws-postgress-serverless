@@ -18,7 +18,7 @@ const hello = async (event) => {
   // return { message: 'Go Serverless v1.0! Your function executed successfully!', event };
 }
 
-const getDistrictsFor = (event, context, callback) => {
+const getDistrictsForState = (event, context, callback) => {
 
   const sql = 
   `
@@ -48,14 +48,15 @@ const getDistrictsFor = (event, context, callback) => {
   client
     .query(sql, [event.pathParameters.state_abbrev])
     .then((res) => {
-
+      
       const response = {
         statusCode: 200,
+        headers: {
+          "Access-Control-Allow-Origin": '*',
+          "Access-Control-Allow-Methods": 'GET'
+        },
         body: JSON.stringify(res.rows[0]['jsonb_build_object']),
       }
-
-      res.setHeader('content-type', 'application/json');
-    res.setHeader('Access-Control-Allow-Origin', '*');
 
       callback(null, response)
 
@@ -74,4 +75,4 @@ const getDistrictsFor = (event, context, callback) => {
     })
 }
 
-module.exports = { hello, getDistrictsFor }
+module.exports = { hello, getDistrictsForState }
